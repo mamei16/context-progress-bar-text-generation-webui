@@ -13,6 +13,7 @@ import gradio as gr
 from modules import chat, shared
 from modules.llama_cpp_python_hijack import llama_cpp_lib
 
+
 params = {
     "display_name": "Example Extension",
     "is_tab": False,
@@ -20,63 +21,6 @@ params = {
 
 extension_dir = Path(__file__).parent
 context_window_size = 1
-
-
-def history_modifier(history):
-    """
-    Modifies the chat history.
-    Only used in chat mode.
-    """
-    return history
-
-def state_modifier(state):
-    """
-    Modifies the state variable, which is a dictionary containing the input
-    values in the UI like sliders and checkboxes.
-    """
-    return state
-
-def chat_input_modifier(text, visible_text, state):
-    """
-    Modifies the user input string in chat mode (visible_text).
-    You can also modify the internal representation of the user
-    input (text) to change how it will appear in the prompt.
-    """
-    return text, visible_text
-
-def input_modifier(string, state, is_chat=False):
-    """
-    In default/notebook modes, modifies the whole prompt.
-
-    In chat mode, it is the same as chat_input_modifier but only applied
-    to "text", here called "string", and not to "visible_text".
-    """
-    return string
-
-def bot_prefix_modifier(string, state):
-    """
-    Modifies the prefix for the next bot reply in chat mode.
-    By default, the prefix will be something like "Bot Name:".
-    """
-    return string
-
-def tokenizer_modifier(state, prompt, input_ids, input_embeds):
-    """
-    Modifies the input ids and embeds.
-    Used by the multimodal extension to put image embeddings in the prompt.
-    Only used by loaders that use the transformers library for sampling.
-    """
-    return prompt, input_ids, input_embeds
-
-
-def output_modifier(string, state, is_chat=False):
-    """
-    Modifies the LLM output before it gets presented.
-
-    In chat mode, the modified version goes into history['visible'],
-    and the original version goes into history['internal'].
-    """
-    return string
 
 
 def custom_css():
@@ -99,7 +43,6 @@ def setup():
     Gets executed only once, when the extension is imported.
     """
     pass
-
 
 def get_current_context_percentage():
     if not shared.model:
