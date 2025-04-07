@@ -38,12 +38,6 @@ def custom_js():
     with open(extension_dir / "script.js", "r") as f:
         return f.read()
 
-def setup():
-    """
-    Gets executed only once, when the extension is imported.
-    """
-    pass
-
 def get_current_context_percentage():
     if not shared.model:
         return 0
@@ -73,10 +67,8 @@ def ui():
     </body>
     """
     html = gr.HTML(HTML)
-    #usage_percentage_input = gr.Slider(label="Context Usage (0.0 - 1.0)", value=0.2, minimum=0., maximum=1., step=0.1)
     hidden_text = gr.Text(visible=False, elem_id="percentage_color_elem")
 
-    #usage_percentage_input.change(lambda x: x*100, usage_percentage_input, hidden_text)
     hidden_text.change(None, None, None, js=f'() => {{ {custom_js()}; updateProgressBar(document.getElementById("percentage_color_elem").children[1].children[1].value); }}')
 
     shared.gradio['model_status'].change(set_context_window_size, None, None)
