@@ -21,6 +21,7 @@ params = {
 
 extension_dir = Path(__file__).parent
 context_window_size = 1
+js_code = None
 
 
 def custom_css():
@@ -35,8 +36,10 @@ def custom_js():
     Returns a javascript string that gets appended to the javascript
     for the webui.
     """
+    global js_code
     with open(extension_dir / "script.js", "r") as f:
-        return f.read()
+        js_code = f.read()
+        return js_code
 
 def get_current_context_percentage():
     if not shared.model:
@@ -69,8 +72,8 @@ def ui():
     html = gr.HTML(HTML)
     hidden_text = gr.Text(visible=False, elem_id="percentage_color_elem")
 
-    hidden_text.change(None, None, None, js=f'() => {{ {custom_js()}; updateProgressBar(document.getElementById("percentage_color_elem").children[1].children[1].value); }}')
+    hidden_text.change(None, None, None, js=f'() => {{ {js_code}; updateProgressBar(document.getElementById("percentage_color_elem").children[1].children[1].value); }}')
 
     shared.gradio['model_status'].change(set_context_window_size, None, None)
     shared.gradio['display'].change(get_current_context_percentage, None, hidden_text)
-    shared.gradio['theme_state'].change(None, None, None, js=f"() => {{ {custom_js()}; toggleDarkMode() }}")
+    shared.gradio['theme_state'].change(None, None, None, js=f"() => {{ {js_code}; toggleDarkMode() }}")
