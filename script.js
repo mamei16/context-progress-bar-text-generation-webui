@@ -55,8 +55,6 @@ function updateProgressBar(percentage) {
 
 
 function toggleDarkMode() {
-  force_search_checkbox = document.getElementById("force-search");
-  var currentCSS = document.getElementById("highlight-css");
   if (darkModeEnabled()) {
     var lightGray = getComputedStyle(document.body).getPropertyValue("--light-gray");
     progressContainer.style.backgroundColor = lightGray;
