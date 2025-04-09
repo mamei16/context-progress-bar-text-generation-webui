@@ -48,7 +48,8 @@ def custom_js():
     global js_code
     with open(extension_dir / "script.js", "r") as f:
         js_code = f.read()
-        return js_code
+    with open(extension_dir / "setup.js", "r") as f:
+       return f.read() + js_code
 
 def get_current_context_percentage():
     if not shared.model:
@@ -98,9 +99,14 @@ def ui():
     """
     html = gr.HTML(HTML)
     hidden_text = gr.Text(visible=False, elem_id="percentage_color_elem")
+    hidden_chat_tab_button = gr.Button(visible=False, elem_id="hidden-chat-tab-button")
 
-    hidden_text.change(None, None, None, js=f'() => {{ {js_code}; updateProgressBar(document.getElementById("percentage_color_elem").children[1].children[1].value); }}')
+    hidden_text.change(None, None, None,
+                       js=f'() => {{ {js_code}; updateProgressBar(document.getElementById("percentage_color_elem").children[1].children[1].value); }}')
 
-    shared.gradio['model_status'].change(set_context_window_size, None, None)
+    # this should ideally be 'shared.gradio['model_status'].change', but due to bug
+    # https://github.com/gradio-app/gradio/issues/9103, this workaround is needed
+    hidden_chat_tab_button.click(set_context_window_size, None, None)
+
     shared.gradio['display'].change(get_current_context_percentage, None, hidden_text)
     shared.gradio['theme_state'].change(None, None, None, js=f"() => {{ {js_code}; toggleDarkMode() }}")

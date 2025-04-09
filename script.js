@@ -5,7 +5,7 @@ function darkModeEnabled() {
 
 
 function getColor(percentage) {
-    if (percentage == 0) return "rgb(0, 0, 0)";
+    if (percentage == 0) return "rgba(0, 0, 0, 0)";
 
     const bright_colors = [
         { stop: 0, color: [0, 123, 255] },
@@ -68,12 +68,5 @@ function toggleDarkMode() {
   updateProgressBar(progressContainer.lastPercentage);
 }
 
-
-
-var chatInputContainer = document.getElementById("chat-input-container");
 var progressContainer = document.querySelector('.progress-container');
-chatInputContainer.insertAdjacentElement("beforeend", document.querySelector('.progress-container-container'));
-document.querySelector('.progress-container-container').style.marginTop = "-15px";
-// Avoid dead space at the bottom of the chat tab
-document.getElementById("component-1").style.marginBottom = "-80px";
 toggleDarkMode();
