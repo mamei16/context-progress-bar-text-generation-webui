@@ -7,6 +7,7 @@ functions are declared in the same order that they are called at
 generation time.
 """
 from pathlib import Path
+from enum import Enum
 
 import gradio as gr
 
@@ -19,9 +20,17 @@ params = {
     "is_tab": False,
 }
 
+
+class ModelLoader(Enum):
+    LLAMA_CPP = 1
+    EXLLAMA = 2
+    EXLLAMA_HF = 3
+
+
 extension_dir = Path(__file__).parent
 context_window_size = 1
 js_code = None
+model_loader = None
 
 
 def custom_css():
@@ -44,13 +53,31 @@ def custom_js():
 def get_current_context_percentage():
     if not shared.model:
         return 0
-    return (shared.model.model.n_tokens / context_window_size) * 100
+
+    if model_loader == ModelLoader.LLAMA_CPP:
+        num_context_tokens = shared.model.model.n_tokens
+    elif model_loader == ModelLoader.EXLLAMA:
+        num_context_tokens = shared.model.cache.current_seq_len
+    elif model_loader == ModelLoader.EXLLAMA_HF:
+        num_context_tokens = shared.model.ex_cache.current_seq_len
+
+    return (num_context_tokens / context_window_size) * 100
 
 def set_context_window_size():
-    global context_window_size
+    global context_window_size, model_loader
     if not shared.model:
         return
-    context_window_size = llama_cpp_lib().llama_n_ctx(shared.model.model.ctx)
+
+    model_class_name = type(shared.model).__name__.lower()
+    if model_class_name.startswith("llamacpp"):
+        model_loader = ModelLoader.LLAMA_CPP
+        context_window_size = llama_cpp_lib().llama_n_ctx(shared.model.model.ctx)
+    elif model_class_name == "exllamav2model":
+        model_loader = ModelLoader.EXLLAMA
+        context_window_size = shared.args.max_seq_len
+    elif model_class_name == "exllamav2hf":
+        model_loader = ModelLoader.EXLLAMA_HF
+        context_window_size = shared.args.max_seq_len
 
 def ui():
     """
