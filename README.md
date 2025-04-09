@@ -4,4 +4,4 @@ Displays an animated progress bar below the chat input field that shows how much
 ![image](https://github.com/user-attachments/assets/06deba7e-8c34-4112-a715-f1e67ad92294)
 
 
-Right now, only the `llama.cpp` and `llamacpp_HF` model loaders are supported.
+Right now, only the `llama.cpp`, `llamacpp_HF`, `ExLlamav2` and `ExLlamav2_HF` model loaders are supported.
