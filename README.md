@@ -5,3 +5,5 @@ Displays an animated progress bar below the chat input field that shows how much
 
 
 Right now, only the `llama.cpp`, `llamacpp_HF`, `ExLlamav2` and `ExLlamav2_HF` model loaders are supported.
+
+To use this extension with the [new llama.cpp loader](https://github.com/oobabooga/text-generation-webui/pull/6846), you need to activate metrics for the llama server. To do this, add `"--metrics"` to the [`cmd` list](https://github.com/oobabooga/text-generation-webui/blob/main/modules/llama_cpp_server.py#L253) in the `_start_server` method located in the file `llama_cpp_server.py`.

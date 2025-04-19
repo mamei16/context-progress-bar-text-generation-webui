@@ -8,11 +8,16 @@ generation time.
 """
 from pathlib import Path
 from enum import Enum
+import re
 
 import gradio as gr
+import requests
 
 from modules import chat, shared
-from modules.llama_cpp_python_hijack import llama_cpp_lib
+try:
+    from modules.llama_cpp_python_hijack import llama_cpp_lib
+except ImportError:
+    llama_cpp_lib = None
 
 
 params = {
@@ -25,12 +30,14 @@ class ModelLoader(Enum):
     LLAMA_CPP = 1
     EXLLAMA = 2
     EXLLAMA_HF = 3
+    LLAMA_SERVER = 4
 
 
 extension_dir = Path(__file__).parent
 context_window_size = 1
 js_code = None
 model_loader = None
+kv_cache_tokens_pat = re.compile("llamacpp:kv_cache_tokens ([0-9]+)")
 
 
 def custom_css():
@@ -61,6 +68,10 @@ def get_current_context_percentage():
         num_context_tokens = shared.model.cache.current_seq_len
     elif model_loader == ModelLoader.EXLLAMA_HF:
         num_context_tokens = shared.model.ex_cache.current_seq_len
+    elif model_loader == ModelLoader.LLAMA_SERVER:
+        response = requests.get(f"http://localhost:{shared.model.port}/metrics")
+        kv_cache_tokens_match = kv_cache_tokens_pat.search(response.text)
+        num_context_tokens = int(kv_cache_tokens_match.group(1))
 
     return (num_context_tokens / context_window_size) * 100
 
@@ -79,6 +90,9 @@ def set_context_window_size():
     elif model_class_name == "exllamav2hf":
         model_loader = ModelLoader.EXLLAMA_HF
         context_window_size = shared.args.max_seq_len
+    elif model_class_name == "llamaserver":
+        model_loader = ModelLoader.LLAMA_SERVER
+        context_window_size = shared.settings["truncation_length"]
 
 def ui():
     """
