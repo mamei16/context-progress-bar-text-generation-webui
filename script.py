@@ -47,6 +47,7 @@ def custom_css():
     with open(extension_dir / "style.css", "r") as f:
         return f.read()
 
+
 def custom_js():
     """
     Returns a javascript string that gets appended to the javascript
@@ -57,6 +58,7 @@ def custom_js():
         js_code = f.read()
     with open(extension_dir / "setup.js", "r") as f:
        return f.read() + js_code
+
 
 def get_current_context_percentage():
     if not shared.model:
@@ -70,10 +72,15 @@ def get_current_context_percentage():
         num_context_tokens = shared.model.ex_cache.current_seq_len
     elif model_loader == ModelLoader.LLAMA_SERVER:
         response = requests.get(f"http://localhost:{shared.model.port}/metrics")
-        kv_cache_tokens_match = kv_cache_tokens_pat.search(response.text)
-        num_context_tokens = int(kv_cache_tokens_match.group(1))
+        if response.status_code == 501:
+            raise ValueError("Please activate llama-server metrics to use the context-progress-bar extension.")
+            num_context_tokens = 0
+        else:
+            kv_cache_tokens_match = kv_cache_tokens_pat.search(response.text)
+            num_context_tokens = int(kv_cache_tokens_match.group(1))
 
     return (num_context_tokens / context_window_size) * 100
+
 
 def set_context_window_size():
     global context_window_size, model_loader
@@ -93,6 +100,7 @@ def set_context_window_size():
     elif model_class_name == "llamaserver":
         model_loader = ModelLoader.LLAMA_SERVER
         context_window_size = shared.settings["truncation_length"]
+
 
 def ui():
     """
