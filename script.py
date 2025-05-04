@@ -86,10 +86,16 @@ def set_context_window_size():
         context_window_size = llama_cpp_lib().llama_n_ctx(shared.model.model.ctx)
     elif model_class_name == "exllamav2model":
         model_loader = ModelLoader.EXLLAMA
-        context_window_size = shared.args.max_seq_len
+        if hasattr(shared.args, "max_seq_len"):
+            context_window_size = shared.args.max_seq_len
+        else:
+            context_window_size = shared.args.ctx_size
     elif model_class_name == "exllamav2hf":
         model_loader = ModelLoader.EXLLAMA_HF
-        context_window_size = shared.args.max_seq_len
+        if hasattr(shared.args, "max_seq_len"):
+            context_window_size = shared.args.max_seq_len
+        else:
+            context_window_size = shared.args.ctx_size
     elif model_class_name == "llamaserver":
         model_loader = ModelLoader.LLAMA_SERVER
         context_window_size = shared.settings["truncation_length"]
