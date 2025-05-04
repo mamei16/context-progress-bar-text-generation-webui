@@ -1,6 +1,8 @@
 from pathlib import Path
 from enum import Enum
 import re
+import logging
+
 
 import gradio as gr
 import requests
@@ -25,6 +27,7 @@ class ModelLoader(Enum):
     LLAMA_SERVER = 4
 
 
+logger = logging.getLogger('text-generation-webui')
 extension_dir = Path(__file__).parent
 context_window_size = 1
 js_code = None
@@ -71,6 +74,9 @@ def get_current_context_percentage():
         else:
             kv_cache_tokens_match = kv_cache_tokens_pat.search(response.text)
             num_context_tokens = int(kv_cache_tokens_match.group(1))
+    else:
+        logger.warning(f"context-progress-bar: 'model_loader' has unexpected value: {model_loader}")
+        return 0
 
     return (num_context_tokens / context_window_size) * 100
 
