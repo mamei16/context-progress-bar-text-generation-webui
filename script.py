@@ -30,6 +30,7 @@ context_window_size = 1
 js_code = None
 model_loader = None
 kv_cache_tokens_pat = re.compile("llamacpp:kv_cache_tokens ([0-9]+)")
+session = requests.Session()
 
 
 def custom_css():
@@ -63,7 +64,7 @@ def get_current_context_percentage():
     elif model_loader == ModelLoader.EXLLAMA_HF:
         num_context_tokens = shared.model.ex_cache.current_seq_len
     elif model_loader == ModelLoader.LLAMA_SERVER:
-        response = requests.get(f"http://localhost:{shared.model.port}/metrics")
+        response = session.get(f"http://localhost:{shared.model.port}/metrics")
         if response.status_code == 501:
             raise ValueError("Please activate llama-server metrics to use the context-progress-bar extension.")
             num_context_tokens = 0
