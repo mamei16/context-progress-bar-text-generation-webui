@@ -125,6 +125,7 @@ def ui():
     </body>
     """
     html = gr.HTML(HTML)
+    hidden_checkbox = gr.Checkbox(visible=False, elem_id="change_notify_checkbox")
     hidden_text = gr.Text(visible=False, elem_id="percentage_elem")
     hidden_chat_tab_button = gr.Button(visible=False, elem_id="hidden-chat-tab-button")
 
@@ -135,5 +136,5 @@ def ui():
     # https://github.com/gradio-app/gradio/issues/9103, this workaround is needed
     hidden_chat_tab_button.click(set_context_window_size, None, None)
 
-    shared.gradio['display'].change(get_current_context_percentage, None, hidden_text)
+    hidden_checkbox.change(get_current_context_percentage, None, hidden_text)
     shared.gradio['theme_state'].change(None, None, None, js=f"() => {{ {js_code}; toggleDarkMode() }}")
