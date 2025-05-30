@@ -13,7 +13,6 @@ document.querySelector('.progress-container-container').style.marginTop = "-15px
 document.getElementById("component-1").style.marginBottom = "-80px";
 
 
-
 var notify_checkbox = document.getElementById("change_notify_checkbox").children[1].firstChild;
 var chat_elem = document.getElementById("chat");
 
@@ -42,3 +41,11 @@ var observeDOM = (function() {
 })();
 
 observeDOM(chat_elem, function(m) { notify_checkbox.click() });
+
+
+// If version > v3.4, adapt width of progress bar
+if (document.getElementsByClassName("token-display").length > 0) {
+  var progressContainer = document.querySelector('.progress-container');
+  progressContainer.style.marginLeft = "33px";
+  progressContainer.style.width = "95.25%";
+}
