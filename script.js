@@ -68,5 +68,5 @@ function toggleDarkMode() {
   updateProgressBar(progressContainer.lastPercentage);
 }
 
-const progressContainer = document.querySelector('.progress-container');
+var progressContainer = document.querySelector('.progress-container');
 toggleDarkMode();

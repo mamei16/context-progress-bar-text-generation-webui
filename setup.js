@@ -11,3 +11,11 @@ chatInputContainer.insertAdjacentElement("beforeend", document.querySelector('.p
 document.querySelector('.progress-container-container').style.marginTop = "-15px";
 // Avoid dead space at the bottom of the chat tab
 document.getElementById("component-1").style.marginBottom = "-80px";
+
+
+// If version > v3.4, adapt width of progress bar
+if (document.getElementsByClassName("token-display").length > 0) {
+  var progressContainer = document.querySelector('.progress-container');
+  progressContainer.style.marginLeft = "33px";
+  progressContainer.style.width = "95.25%";
+}
