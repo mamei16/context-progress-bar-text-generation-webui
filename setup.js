@@ -17,7 +17,6 @@ var notify_checkbox = document.getElementById("change_notify_checkbox").children
 var chat_elem = document.getElementById("chat");
 
 
-
 var observeDOM = (function() {
   var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
