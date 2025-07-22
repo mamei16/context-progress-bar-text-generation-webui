@@ -73,6 +73,10 @@ def get_current_context_percentage():
             num_context_tokens = 0
         else:
             kv_cache_tokens_match = kv_cache_tokens_pat.search(response.text)
+            if not kv_cache_tokens_match:
+                from importlib.metadata import version
+                logger.error("context-progress-bar only supports 'llama-cpp-binaries' versions <= v0.14.0,"
+                                 f"but you have version {version('llama-cpp-binaries')}.")
             num_context_tokens = int(kv_cache_tokens_match.group(1))
     else:
         logger.warning(f"context-progress-bar: 'model_loader' has unexpected value: {model_loader}")
