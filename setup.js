@@ -12,6 +12,9 @@ document.querySelector('.progress-container-container').style.marginTop = "-15px
 // Avoid dead space at the bottom of the chat tab
 document.getElementById("chat-tab").style.marginBottom = "-80px";
 
+// Ensure "extensions" element doesn't make parts of chat input unclickable
+document.getElementById("extensions").style.zIndex = -1;
+
 
 var notify_checkbox = document.getElementById("change_notify_checkbox").children[1].firstChild;
 var chat_elem = document.getElementById("chat");
