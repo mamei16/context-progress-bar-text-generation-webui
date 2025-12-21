@@ -15,7 +15,7 @@ except ImportError:
 
 
 params = {
-    "display_name": "Example Extension",
+    "display_name": "Context progress bar",
     "is_tab": False,
 }
 
@@ -34,6 +34,7 @@ js_code = None
 model_loader = None
 kv_cache_tokens_pat = re.compile("llamacpp:kv_cache_tokens ([0-9]+)")
 session = requests.Session()
+warning_logged = False
 
 
 def custom_css():
@@ -57,6 +58,7 @@ def custom_js():
 
 
 def get_current_context_percentage():
+    global warning_logged
     if not shared.model:
         return 0
 
@@ -75,16 +77,20 @@ def get_current_context_percentage():
             kv_cache_tokens_match = kv_cache_tokens_pat.search(response.text)
             num_context_tokens = int(kv_cache_tokens_match.group(1))
     else:
-        logger.warning(f"context-progress-bar: 'model_loader' has unexpected value: {model_loader}")
+        if not warning_logged:
+            logger.warning(f"context-progress-bar: 'model_loader' has unexpected value: {model_loader}")
+            warning_logged = True
         return 0
 
     return (num_context_tokens / context_window_size) * 100
 
 
 def set_context_window_size():
-    global context_window_size, model_loader
+    global context_window_size, model_loader, warning_logged
     if not shared.model:
         return
+
+    warning_logged = False
 
     model_class_name = type(shared.model).__name__.lower()
     if model_class_name.startswith("llamacpp"):
