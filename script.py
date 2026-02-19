@@ -3,9 +3,7 @@ from enum import Enum
 import re
 import logging
 
-
 import gradio as gr
-import requests
 
 from modules import chat, shared
 try:
@@ -33,7 +31,6 @@ context_window_size = 1
 js_code = None
 model_loader = None
 kv_cache_tokens_pat = re.compile("llamacpp:kv_cache_tokens ([0-9]+)")
-session = requests.Session()
 
 
 def custom_css():
@@ -59,6 +56,8 @@ def custom_js():
 def get_current_context_percentage():
     if not shared.model:
         return 0
+    if context_window_size == 1:
+        set_context_window_size()
 
     if model_loader == ModelLoader.LLAMA_CPP:
         num_context_tokens = shared.model.model.n_tokens
@@ -67,17 +66,7 @@ def get_current_context_percentage():
     elif model_loader == ModelLoader.EXLLAMA_HF:
         num_context_tokens = shared.model.ex_cache.current_seq_len
     elif model_loader == ModelLoader.LLAMA_SERVER:
-        response = session.get(f"http://localhost:{shared.model.port}/metrics")
-        if response.status_code == 501:
-            raise ValueError("Please activate llama-server metrics to use the context-progress-bar extension.")
-            num_context_tokens = 0
-        else:
-            kv_cache_tokens_match = kv_cache_tokens_pat.search(response.text)
-            if not kv_cache_tokens_match:
-                from importlib.metadata import version
-                logger.error("context-progress-bar only supports 'llama-cpp-binaries' versions <= v0.14.0,"
-                                 f"but you have version {version('llama-cpp-binaries')}.")
-            num_context_tokens = int(kv_cache_tokens_match.group(1))
+        num_context_tokens = shared.model.tokens_evaluated + shared.model.tokens_predicted
     else:
         logger.warning(f"context-progress-bar: 'model_loader' has unexpected value: {model_loader}")
         return 0
@@ -88,6 +77,7 @@ def get_current_context_percentage():
 def set_context_window_size():
     global context_window_size, model_loader
     if not shared.model:
+        context_window_size = 1
         return
 
     model_class_name = type(shared.model).__name__.lower()
@@ -108,7 +98,7 @@ def set_context_window_size():
             context_window_size = shared.args.ctx_size
     elif model_class_name == "llamaserver":
         model_loader = ModelLoader.LLAMA_SERVER
-        context_window_size = shared.settings["truncation_length"]
+        context_window_size = shared.args.ctx_size
 
 
 def ui():
@@ -135,9 +125,6 @@ def ui():
     hidden_text.change(None, None, None,
                        js=f'() => {{ {js_code}; updateProgressBar(document.getElementById("percentage_elem").children[1].children[1].value); }}')
 
-    # this should ideally be 'shared.gradio['model_status'].change', but due to bug
-    # https://github.com/gradio-app/gradio/issues/9103, this workaround is needed
-    hidden_chat_tab_button.click(set_context_window_size, None, None)
-
+    shared.gradio['load_model'].click(set_context_window_size, None, None)
     shared.gradio['display'].change(get_current_context_percentage, None, hidden_text)
     shared.gradio['theme_state'].change(None, None, None, js=f"() => {{ {js_code}; toggleDarkMode() }}")
