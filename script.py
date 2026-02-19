@@ -3,9 +3,7 @@ from enum import Enum
 import re
 import logging
 
-
 import gradio as gr
-import requests
 
 from modules import chat, shared
 try:
@@ -33,7 +31,6 @@ context_window_size = 1
 js_code = None
 model_loader = None
 kv_cache_tokens_pat = re.compile("llamacpp:kv_cache_tokens ([0-9]+)")
-session = requests.Session()
 warning_logged = False
 
 
