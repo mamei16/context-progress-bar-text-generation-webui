@@ -120,7 +120,6 @@ def ui():
     """
     html = gr.HTML(HTML)
     hidden_text = gr.Text(visible=False, elem_id="percentage_elem")
-    hidden_chat_tab_button = gr.Button(visible=False, elem_id="hidden-chat-tab-button")
 
     hidden_text.change(None, None, None,
                        js=f'() => {{ {js_code}; updateProgressBar(document.getElementById("percentage_elem").children[1].children[1].value); }}')
