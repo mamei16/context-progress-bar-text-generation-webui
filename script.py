@@ -74,6 +74,11 @@ def get_current_context_percentage():
     return (num_context_tokens / context_window_size) * 100
 
 
+def reset_context_window_size():
+    global context_window_size
+    context_window_size = 1
+
+
 def set_context_window_size():
     global context_window_size, model_loader
     if not shared.model:
@@ -124,6 +129,6 @@ def ui():
     hidden_text.change(None, None, None,
                        js=f'() => {{ {js_code}; updateProgressBar(document.getElementById("percentage_elem").children[1].children[1].value); }}')
 
-    shared.gradio['load_model'].click(set_context_window_size, None, None)
+    shared.gradio['load_model'].click(reset_context_window_size, None, None)
     shared.gradio['display'].change(get_current_context_percentage, None, hidden_text)
     shared.gradio['theme_state'].change(None, None, None, js=f"() => {{ {js_code}; toggleDarkMode() }}")
