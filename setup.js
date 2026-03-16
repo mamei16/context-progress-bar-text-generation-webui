@@ -13,5 +13,5 @@ document.getElementById("extensions").style.zIndex = -1;
 if (document.getElementsByClassName("token-display").length > 0) {
   var progressContainer = document.querySelector('.progress-container');
   progressContainer.style.marginLeft = "33px";
-  progressContainer.style.width = "95.25%";
+  progressContainer.style.width = "95.425%";
 }
