@@ -30,7 +30,6 @@ extension_dir = Path(__file__).parent
 context_window_size = 1
 js_code = None
 model_loader = None
-kv_cache_tokens_pat = re.compile("llamacpp:kv_cache_tokens ([0-9]+)")
 warning_logged = False
 
 
