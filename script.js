@@ -48,7 +48,7 @@ function getColor(percentage) {
 function updateProgressBar(percentage) {
     if (percentage === undefined) percentage = 0;
     progressContainer.lastPercentage = percentage;
-    const progressBar = document.querySelector('.progress-bar');
+    const progressBar = progressContainer.querySelector('.progress-bar');
     progressBar.style.width = percentage + '%';
     progressBar.style.backgroundColor = getColor(percentage);
 }
@@ -58,12 +58,8 @@ function toggleDarkMode() {
   if (darkModeEnabled()) {
     var lightGray = getComputedStyle(document.body).getPropertyValue("--light-gray");
     progressContainer.style.backgroundColor = lightGray;
-    progressContainer.style.outlineWidth = "0px";
   } else {
-    progressContainer.style.backgroundColor = "white";
-    progressContainer.style.outlineWidth = "1px";
-    progressContainer.style.outlineColor = "#c5c5d2";
-    progressContainer.style.outlineStyle = "solid";
+    progressContainer.style.backgroundColor = "#f3f4f6";
   }
   updateProgressBar(progressContainer.lastPercentage);
 }
